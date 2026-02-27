@@ -36,7 +36,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Subtle concrete texture */
   body::after {
     content: '';
     position: fixed;
@@ -99,6 +98,104 @@
   }
 
   .nav-links a:hover { color: var(--ink); }
+
+  /* ── HAMBURGER ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--ink);
+    background: transparent;
+    cursor: pointer;
+    padding: 7px;
+    transition: background 0.2s;
+  }
+
+  .nav-hamburger:hover { background: var(--ink); }
+  .nav-hamburger:hover span { background: var(--bg); }
+
+  .nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.3s, opacity 0.3s, background 0.2s;
+    transform-origin: center;
+  }
+
+  /* Open state */
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* ── MOBILE MENU DRAWER ── */
+  .nav-drawer {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 99;
+    background: rgba(240,237,232,0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--ink);
+    padding: 0 1.5rem 1.5rem;
+    padding-top: calc(60px + 1rem); /* below nav bar */
+    transform: translateY(-110%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-drawer.open {
+    transform: translateY(0);
+  }
+
+  .nav-drawer ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nav-drawer ul li {
+    border-bottom: 1px solid var(--line2);
+  }
+
+  .nav-drawer ul li:first-child {
+    border-top: 1px solid var(--line2);
+  }
+
+  .nav-drawer ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 1rem 0;
+    transition: color 0.2s, padding-left 0.2s;
+  }
+
+  .nav-drawer ul li a:hover {
+    color: var(--ink);
+    padding-left: 0.5rem;
+  }
+
+  .nav-drawer ul li a::after {
+    content: '↗';
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .nav-drawer ul li a:hover::after {
+    opacity: 1;
+  }
 
   /* ── HERO ── */
   .hero {
@@ -877,7 +974,12 @@
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     nav { padding: 1.1rem 1.5rem; }
-    .nav-links { gap: 1.5rem; }
+
+    /* Hide desktop links, show hamburger */
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .nav-drawer { display: block; }
+
     .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3.5rem; }
     .hero-right { display: none; }
     .section-wrap { padding: 4.5rem 1.5rem; }
@@ -905,7 +1007,24 @@
     <li><a href="#certificates">Certs</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <!-- Hamburger button (mobile only) -->
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
+
+<!-- Mobile Drawer -->
+<div class="nav-drawer" id="navDrawer">
+  <ul>
+    <li><a href="#about" class="drawer-link">About</a></li>
+    <li><a href="#skills" class="drawer-link">Skills</a></li>
+    <li><a href="#projects" class="drawer-link">Work</a></li>
+    <li><a href="#certificates" class="drawer-link">Certs</a></li>
+    <li><a href="#contact" class="drawer-link">Contact</a></li>
+  </ul>
+</div>
 
 <!-- HERO -->
 <section class="hero" id="home">
@@ -966,9 +1085,9 @@
           <span class="tag">Fast Learner</span>
           <span class="tag">Team Player</span>
         </div>
-   <div class="about-cta" style="margin-top:2rem">
-  <a href="files/cv.pdf" class="btn-primary" download target="_blank">Download CV ↓</a>
-</div>
+        <div class="about-cta" style="margin-top:2rem">
+          <a href="files/cv.pdf" class="btn-primary" download target="_blank">Download CV ↓</a>
+        </div>
       </div>
       <div class="about-panel reveal" style="transition-delay:0.12s">
         <div class="panel-row">
@@ -1049,7 +1168,6 @@
   </div>
 </section>
 
-
 <!-- PROJECTS -->
 <section id="projects">
   <div class="section-wrap">
@@ -1095,7 +1213,6 @@
   </div>
 </section>
 
-
 <!-- CERTIFICATES -->
 <section id="certificates">
   <div class="section-wrap">
@@ -1105,11 +1222,9 @@
       <div class="section-line"></div>
     </div>
     <div class="certs-grid">
-
-      <!-- Replace cert-placeholder with <img src="your-cert.jpg" alt="..."> inside cert-img-wrap -->
       <div class="cert-card reveal" onclick="openLightbox(this)">
         <div class="cert-img-wrap">
-      <img src="images/2nd.jpg" alt="Google UX Design Certificate">
+          <img src="images/2nd.jpg" alt="2nd Place Skills Olympics">
           <div class="cert-overlay"><div class="cert-overlay-btn">View Full</div></div>
         </div>
         <div class="cert-info">
@@ -1118,10 +1233,9 @@
           <div class="cert-date">Issued Mar 2025</div>
         </div>
       </div>
-
       <div class="cert-card reveal" style="transition-delay:0.08s" onclick="openLightbox(this)">
         <div class="cert-img-wrap">
-     <img src="images/2ndCTF.jpg" alt="Google UX Design Certificate">
+          <img src="images/2ndCTF.jpg" alt="2nd Place CTF">
           <div class="cert-overlay"><div class="cert-overlay-btn">View Full</div></div>
         </div>
         <div class="cert-info">
@@ -1130,10 +1244,9 @@
           <div class="cert-date">Issued Mar 2025</div>
         </div>
       </div>
-
       <div class="cert-card reveal" style="transition-delay:0.16s" onclick="openLightbox(this)">
         <div class="cert-img-wrap">
-      <img src="images/3rd.jpg" alt="Google UX Design Certificate">
+          <img src="images/3rd.jpg" alt="3rd Place Skills Olympics">
           <div class="cert-overlay"><div class="cert-overlay-btn">View Full</div></div>
         </div>
         <div class="cert-info">
@@ -1142,10 +1255,9 @@
           <div class="cert-date">Issued Mar 2024</div>
         </div>
       </div>
-
       <div class="cert-card reveal" style="transition-delay:0.24s" onclick="openLightbox(this)">
         <div class="cert-img-wrap">
-      <img src="images/EVCO.png" alt="Google UX Design Certificate">
+          <img src="images/EVCO.png" alt="EVCO Certificate">
           <div class="cert-overlay"><div class="cert-overlay-btn">View Full</div></div>
         </div>
         <div class="cert-info">
@@ -1154,11 +1266,9 @@
           <div class="cert-date">Issued Oct 2025</div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
-
 
 <!-- CONTACT -->
 <section id="contact">
@@ -1169,34 +1279,34 @@
       <div class="section-line"></div>
     </div>
     <div class="contact-links-full reveal">
-        <h2 class="contact-headline">Let's Connect.</h2>
-        <p class="contact-sub">Got a project, an opportunity, or just want to talk shop? Reach me through any of these channels.</p>
-        <div class="contact-links">
-          <a href="mailto:jeffersondoria631@gmail.com" class="contact-link">
-            <span class="cl-label">Email</span>
-            jeffersondoria631@gmail.com
-          </a>
-          <a href="https://github.com/iamjeffdoria" class="contact-link" target="_blank">
-            <span class="cl-label">GitHub</span>
-            github.com/iamjeffdoria
-          </a>
-          <a href="https://facebook.com/yourprofile" class="contact-link" target="_blank">
-            <span class="cl-label">Facebook</span>
-            Jeff Doria
-          </a>
-          <a href="https://instagram.com/yourhandle" class="contact-link" target="_blank">
-            <span class="cl-label">Instagram</span>
-            @jepjeeepp
-          </a>
-        </div>
+      <h2 class="contact-headline">Let's Connect.</h2>
+      <p class="contact-sub">Got a project, an opportunity, or just want to talk shop? Reach me through any of these channels.</p>
+      <div class="contact-links">
+        <a href="mailto:jeffersondoria631@gmail.com" class="contact-link">
+          <span class="cl-label">Email</span>
+          jeffersondoria631@gmail.com
+        </a>
+        <a href="https://github.com/iamjeffdoria" class="contact-link" target="_blank">
+          <span class="cl-label">GitHub</span>
+          github.com/iamjeffdoria
+        </a>
+        <a href="https://facebook.com/yourprofile" class="contact-link" target="_blank">
+          <span class="cl-label">Facebook</span>
+          Jeff Doria
+        </a>
+        <a href="https://instagram.com/yourhandle" class="contact-link" target="_blank">
+          <span class="cl-label">Instagram</span>
+          @jepjeeepp
+        </a>
       </div>
+    </div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <p>© 2026 Jefferson Doria. All rights reserved.</p>
-  <div class="footer-brand">YN</div>
+  <div class="footer-brand">JD</div>
   <p>Built from scratch.</p>
 </footer>
 
@@ -1241,6 +1351,36 @@
     navLinks.forEach(a => {
       a.style.color = a.getAttribute('href') === '#' + current ? 'var(--ink)' : '';
     });
+  });
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const navDrawer = document.getElementById('navDrawer');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = navDrawer.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Close drawer when a link is clicked
+  document.querySelectorAll('.drawer-link').forEach(link => {
+    link.addEventListener('click', () => {
+      navDrawer.classList.remove('open');
+      hamburger.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Close drawer on outside click
+  document.addEventListener('click', (e) => {
+    if (navDrawer.classList.contains('open') &&
+        !navDrawer.contains(e.target) &&
+        !hamburger.contains(e.target)) {
+      navDrawer.classList.remove('open');
+      hamburger.classList.remove('open');
+      document.body.style.overflow = '';
+    }
   });
 </script>
 </body>
